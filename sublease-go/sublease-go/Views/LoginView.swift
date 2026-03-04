@@ -1,5 +1,5 @@
 //
-//  Login.swift
+//  LoginView.swift
 //  sublease-go
 //
 //  Created by Hanna Pan on 3/3/26.
