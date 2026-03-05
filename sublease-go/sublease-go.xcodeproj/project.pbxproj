@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		4264553E2F5A1A7F00D0F4F4 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 4264553D2F5A1A7F00D0F4F4 /* FirebaseFirestore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		42812BC12F57B8F00058985F /* sublease-go.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "sublease-go.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4264553E2F5A1A7F00D0F4F4 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +70,7 @@
 			);
 			name = "sublease-go";
 			packageProductDependencies = (
+				4264553D2F5A1A7F00D0F4F4 /* FirebaseFirestore */,
 			);
 			productName = "sublease-go";
 			productReference = 42812BC12F57B8F00058985F /* sublease-go.app */;
@@ -94,6 +100,9 @@
 			);
 			mainGroup = 42812BB82F57B8F00058985F;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				4264553C2F5A1A7F00D0F4F4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 42812BC22F57B8F00058985F /* Products */;
 			projectDirPath = "";
@@ -332,6 +341,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		4264553C2F5A1A7F00D0F4F4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.10.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4264553D2F5A1A7F00D0F4F4 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4264553C2F5A1A7F00D0F4F4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 42812BB92F57B8F00058985F /* Project object */;
 }
