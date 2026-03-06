@@ -11,7 +11,7 @@ struct ContentView: View {
     @State private var isAuthed = false
     @State private var uwEmail = ""
 
-    @State private var listings: [Listing] = Listing.mock
+    @State private var listings: [Listing] = []
     @State private var filters = Filters()
     @State private var threads: [Thread] = Thread.mock
 
