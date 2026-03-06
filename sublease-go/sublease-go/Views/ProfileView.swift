@@ -13,7 +13,6 @@ struct ProfileView: View {
     let listings: [Listing]
     @EnvironmentObject var auth: AuthManager
 
-    /// Only listings belonging to the current user (used for "My Listings").
     private var myListings: [Listing] {
         listings.filter { $0.userId == uwEmail }
     }

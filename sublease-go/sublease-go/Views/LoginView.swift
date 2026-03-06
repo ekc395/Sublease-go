@@ -10,6 +10,7 @@ import SwiftUI
 
 struct LoginView: View {
     @EnvironmentObject var auth: AuthManager
+    @Binding var showProfile: Bool
     @State private var emailInput = ""
     @State private var error: String?
 
@@ -39,6 +40,7 @@ struct LoginView: View {
                         return
                     }
                     error = nil
+                    showProfile = true
                     auth.login(email: email)
                 } label: {
                     Text("Continue").frame(maxWidth: .infinity)
