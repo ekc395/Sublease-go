@@ -11,6 +11,8 @@ struct CreateListingView: View {
     @Binding var listings: [Listing]
     var userId: String = ""
 
+    private let listingsService = FirebaseListingsService()
+
     @State private var title = ""
     @State private var description = ""
     @State private var price = ""
@@ -18,6 +20,7 @@ struct CreateListingView: View {
     @State private var apartmentBuilding = ""
     @State private var furnished = false
     @State private var error: String?
+    @State private var isPosting = false
 
     var body: some View {
         NavigationStack {
@@ -41,30 +44,60 @@ struct CreateListingView: View {
                         guard let p = Int(price), p > 0 else { error = "Enter a valid price."; return }
                         guard !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { error = "Title is required."; return }
                         error = nil
+                        isPosting = true
 
                         let now = Date()
                         let defaultEnd = Calendar.current.date(byAdding: .month, value: 3, to: now) ?? now
-                        let new = Listing(
-                            id: UUID().uuidString,
-                            title: title,
-                            price: p,
-                            bedrooms: bedrooms,
-                            apartmentBuilding: apartmentBuilding.isEmpty ? "Seattle" : apartmentBuilding,
-                            furnished: furnished,
-                            description: description.isEmpty ? "No description yet." : description,
-                            genderPreference: "Any",
-                            leaseStart: now,
-                            leaseEnd: defaultEnd,
-                            schoolYearPreference: "Any",
-                            userId: userId
-                        )
-                        listings.insert(new, at: 0)
-                        title = ""; description = ""; price = ""; bedrooms = 1; apartmentBuilding = ""; furnished = false
+                        let building = apartmentBuilding.isEmpty ? "Seattle" : apartmentBuilding
+                        let desc = description.isEmpty ? "No description yet." : description
+
+                        Task {
+                            do {
+                                let docId = try await listingsService.createListing(
+                                    title: title,
+                                    description: desc,
+                                    price: p,
+                                    bedrooms: bedrooms,
+                                    apartmentBuilding: building,
+                                    furnished: furnished,
+                                    genderPreference: "Any",
+                                    schoolYearPreference: "Any",
+                                    leaseStart: now,
+                                    leaseEnd: defaultEnd,
+                                    userId: userId
+                                )
+                                await MainActor.run {
+                                    let new = Listing(
+                                        id: docId,
+                                        title: title,
+                                        price: p,
+                                        bedrooms: bedrooms,
+                                        apartmentBuilding: building,
+                                        furnished: furnished,
+                                        description: desc,
+                                        genderPreference: "Any",
+                                        leaseStart: now,
+                                        leaseEnd: defaultEnd,
+                                        schoolYearPreference: "Any",
+                                        userId: userId
+                                    )
+                                    listings.insert(new, at: 0)
+                                    title = ""; description = ""; price = ""; bedrooms = 1; apartmentBuilding = ""; furnished = false
+                                    isPosting = false
+                                }
+                            } catch let err {
+                                await MainActor.run {
+                                    error = "Failed to post: \(err.localizedDescription)"
+                                    isPosting = false
+                                }
+                            }
+                        }
                     } label: {
-                        Text("Post listing").frame(maxWidth: .infinity)
+                        Text(isPosting ? "Posting…" : "Post listing").frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(.black)
+                    .disabled(isPosting)
                 }
 
                 if let error {

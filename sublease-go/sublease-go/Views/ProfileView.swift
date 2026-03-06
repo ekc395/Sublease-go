@@ -12,6 +12,11 @@ struct ProfileView: View {
     let uwEmail: String
     let listings: [Listing]
 
+    /// Only listings belonging to the current user (used for "My Listings").
+    private var myListings: [Listing] {
+        listings.filter { $0.userId == uwEmail }
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -24,10 +29,10 @@ struct ProfileView: View {
 
                     VStack(alignment: .leading, spacing: 8) {
                         Text("My Listings").font(.headline)
-                        if listings.isEmpty {
+                        if myListings.isEmpty {
                             Text("No listings yet.").foregroundStyle(.secondary)
                         } else {
-                            ForEach(listings.prefix(3)) { ListingCard(listing: $0) }
+                            ForEach(myListings.prefix(3)) { ListingCard(listing: $0) }
                         }
                     }
                     .card()

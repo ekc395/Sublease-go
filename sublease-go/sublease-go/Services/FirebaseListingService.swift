@@ -52,6 +52,7 @@ final class FirebaseListingsService {
         }
     }
 
+    /// Creates a listing in Firestore and returns the new document ID.
     func createListing(
         title: String,
         description: String,
@@ -64,7 +65,7 @@ final class FirebaseListingsService {
         leaseStart: Date,
         leaseEnd: Date,
         userId: String
-    ) async throws {
+    ) async throws -> String {
         let data: [String: Any] = [
             "title": title,
             "description": description,
@@ -79,6 +80,7 @@ final class FirebaseListingsService {
             "userId": userId
         ]
 
-        try await db.collection("listings").addDocument(data: data)
+        let ref = try await db.collection("listings").addDocument(data: data)
+        return ref.documentID
     }
 }
