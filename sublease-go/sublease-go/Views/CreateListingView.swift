@@ -24,7 +24,6 @@ struct CreateListingView: View {
     @State private var furnished = false
     @State private var error: String?
     @State private var isPosting = false
-    @FocusState private var isFieldFocused: Bool
     
     private let uwPurple = Color(red: 0.227, green: 0.114, blue: 0.514)
     private let uwGold = Color(red: 0.929, green: 0.710, blue: 0.102)
@@ -51,13 +50,10 @@ struct CreateListingView: View {
                     Form {
                         Section("Listing") {
                             TextField("Title", text: $title)
-                                .focused($isFieldFocused)
                             TextField("Apartment / Building", text: $apartmentBuilding)
                                 .textInputAutocapitalization(.words)
-                                .focused($isFieldFocused)
                             TextField("Monthly price", text: $price)
                                 .keyboardType(.numberPad)
-                                .focused($isFieldFocused)
                             Stepper("Bedrooms: \(bedrooms)", value: $bedrooms, in: 1...10)
                             Toggle("Furnished", isOn: $furnished)
                         }
@@ -66,14 +62,11 @@ struct CreateListingView: View {
                         Section("Description") {
                             TextEditor(text: $description)
                                 .frame(minHeight: 120)
-                                .focused($isFieldFocused)
                         }
                         .foregroundStyle(textPrimary)
 
                         Section {
                             Button {
-                                isFieldFocused = false
-                                
                                 guard let p = Int(price), p > 0 else {
                                     error = "Enter a valid price."
                                     return
@@ -137,7 +130,6 @@ struct CreateListingView: View {
                                             isPosting = false
                                             
                                             onPosted()
-                                            isFieldFocused = false
                                             selectedTab = 0
                                         }
                                     } catch let err {
