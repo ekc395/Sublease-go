@@ -61,7 +61,7 @@ struct ProfileView: View {
                                 Text("No listings yet")
                                     .foregroundStyle(textMuted)
                             } else {
-                                ForEach(myListings.prefix(3)) { listing in
+                                ForEach(myListings) { listing in
                                     VStack(spacing: 8) {
                                         ListingCard(listing: listing)
 
