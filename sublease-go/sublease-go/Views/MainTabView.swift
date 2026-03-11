@@ -48,6 +48,7 @@ struct MainTabView: View {
                 .tabItem {
                     Label("Feed", systemImage: "square.grid.2x2")
                 }
+                .tag(0)
 
                 CreateListingView(
                     listings: $listings,
@@ -61,6 +62,7 @@ struct MainTabView: View {
                 .tabItem {
                     Label("Post", systemImage: "plus.circle")
                 }
+                .tag(1)
 
                 MessagesView(
                     currentUserId: currentUserId,
@@ -69,11 +71,13 @@ struct MainTabView: View {
                 .tabItem {
                     Label("Messages", systemImage: "message")
                 }
+                .tag(2)
 
                 ProfileView(uwEmail: uwEmail, listings: $listings)
-                    .tabItem {
-                        Label("Profile", systemImage: "person")
-                    }
+                .tabItem {
+                    Label("Profile", systemImage: "person")
+                }
+                .tag(3)
             }
             .foregroundStyle(textPrimary)
             .tint(uwPurple)
