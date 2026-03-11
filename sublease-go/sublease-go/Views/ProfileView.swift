@@ -9,8 +9,9 @@ import SwiftUI
 
 struct ProfileView: View {
     let uwEmail: String
-    let listings: [Listing]
+    @Binding var listings: [Listing]
     @EnvironmentObject var auth: AuthManager
+    private let listingsService = FirebaseListingsService()
     
     private let uwPurple = Color(red: 0.227, green: 0.114, blue: 0.514)
     private let uwGold = Color(red: 0.929, green: 0.710, blue: 0.102)
@@ -60,8 +61,20 @@ struct ProfileView: View {
                                 Text("No listings yet")
                                     .foregroundStyle(textMuted)
                             } else {
-                                ForEach(myListings.prefix(3)) {
-                                    ListingCard(listing: $0)
+                                ForEach(myListings.prefix(3)) { listing in
+                                    VStack(spacing: 8) {
+                                        ListingCard(listing: listing)
+
+                                        Button(role: .destructive) {
+                                            Task {
+                                                await deleteListing(listing)
+                                            }
+                                        } label: {
+                                            Text("Delete listing")
+                                                .frame(maxWidth: .infinity)
+                                        }
+                                        .buttonStyle(.bordered)
+                                    }
                                 }
                                 .foregroundStyle(textPrimary)
                             }
@@ -91,5 +104,15 @@ struct ProfileView: View {
             }
         }
         
+    }
+    
+    @MainActor
+    private func deleteListing(_ listing: Listing) async {
+        do {
+            try await listingsService.deleteListing(id: listing.id)
+            listings.removeAll { $0.id == listing.id }
+        } catch {
+            print("Failed to delete listing: \(error)")
+        }
     }
 }

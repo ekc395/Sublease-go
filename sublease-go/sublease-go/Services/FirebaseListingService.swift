@@ -86,4 +86,8 @@ final class FirebaseListingsService {
         let ref = try await db.collection("listings").addDocument(data: data)
         return ref.documentID
     }
+    
+    func deleteListing(id: String) async throws {
+        try await db.collection("listings").document(id).delete()
+    }
 }

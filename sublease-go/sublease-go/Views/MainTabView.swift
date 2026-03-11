@@ -70,7 +70,7 @@ struct MainTabView: View {
                     Label("Messages", systemImage: "message")
                 }
 
-                ProfileView(uwEmail: uwEmail, listings: listings)
+                ProfileView(uwEmail: uwEmail, listings: $listings)
                     .tabItem {
                         Label("Profile", systemImage: "person")
                     }
