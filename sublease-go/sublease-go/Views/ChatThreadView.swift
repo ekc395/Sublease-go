@@ -22,6 +22,13 @@ struct ChatThreadView: View {
     private var threadIndex: Int? {
         threads.firstIndex(where: { $0.id == threadId })
     }
+    
+    private let uwPurple = Color(red: 0.227, green: 0.114, blue: 0.514)
+    private let uwGold = Color(red: 0.929, green: 0.710, blue: 0.102)
+    private let background = Color(red: 0.969, green: 0.965, blue: 0.980)
+    private let textPrimary = Color(red: 0.122, green: 0.082, blue: 0.216)
+    private let textMuted = Color(red: 0.451, green: 0.400, blue: 0.557)
+    private let textBox = Color(red: 0.938, green: 0.928, blue: 0.973)
 
     var body: some View {
         VStack(spacing: 0) {
@@ -29,18 +36,18 @@ struct ChatThreadView: View {
                 LazyVStack(alignment: .leading, spacing: 10) {
                     ForEach(liveMessages) { message in
                         HStack {
-                            if message.isMe {
+                            if (message.isMe) {
                                 Spacer()
                             }
 
                             Text(message.body)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 10)
-                                .background(message.isMe ? Color.black : Color.black.opacity(0.08))
+                                .background(message.isMe ? textPrimary : textMuted)
                                 .foregroundStyle(message.isMe ? .white : .primary)
                                 .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
 
-                            if !message.isMe {
+                            if (!message.isMe) {
                                 Spacer()
                             }
                         }
@@ -57,7 +64,9 @@ struct ChatThreadView: View {
 
                 Button {
                     let text = draft.trimmingCharacters(in: .whitespacesAndNewlines)
-                    guard !text.isEmpty else { return }
+                    guard !text.isEmpty else {
+                        return
+                    }
                     draft = ""
 
                     Task {
@@ -73,11 +82,12 @@ struct ChatThreadView: View {
                     }
                 } label: {
                     Image(systemName: "paperplane.fill")
+                        .foregroundStyle(textPrimary)
                 }
                 .padding(.horizontal, 6)
             }
             .padding(12)
-            .background(Color(.secondarySystemBackground))
+            .background(background)
         }
         .navigationTitle(threads.first(where: { $0.id == threadId })?.otherName ?? "Chat")
         .navigationBarTitleDisplayMode(.inline)
