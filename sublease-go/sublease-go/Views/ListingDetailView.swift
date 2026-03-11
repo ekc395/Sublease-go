@@ -129,34 +129,3 @@ struct ListingDetailView: View {
         }
     }
 }
-
-#Preview {
-    ListingDetailPreview()
-}
-
-private struct ListingDetailPreview: View {
-    @State private var threads: [Thread] = []
-
-    var body: some View {
-        ListingDetailView(
-            listing: Listing(
-                id: "listing-1",
-                title: "Sunny 1BR near campus",
-                price: 1200,
-                bedrooms: 1,
-                apartmentBuilding: "University Heights",
-                furnished: true,
-                description: "Quiet unit 10 minutes from UW. Fully furnished and available for summer quarter.",
-                genderPreference: "None",
-                leaseStart: Date(),
-                leaseEnd: Calendar.current.date(byAdding: .month, value: 3, to: Date())!,
-                schoolYearPreference: "Summer",
-                userId: "owner@uw.edu",
-                ownerName: "Hanna Pan"
-            ),
-            currentUserId: "viewer@uw.edu",
-            currentUserName: "Viewer Name",
-            threads: $threads
-        )
-    }
-}
