@@ -1,10 +1,3 @@
-//
-//  ProfileView.swift
-//  sublease-go
-//
-//  Created by Hanna Pan on 3/3/26.
-//
-
 import SwiftUI
 
 struct ProfileView: View {
@@ -12,16 +5,15 @@ struct ProfileView: View {
     @Binding var listings: [Listing]
     @EnvironmentObject var auth: AuthManager
     private let listingsService = FirebaseListingsService()
-    
+
     private let uwPurple = Color(red: 0.227, green: 0.114, blue: 0.514)
-    private let uwGold = Color(red: 0.929, green: 0.710, blue: 0.102)
     private let background = Color(red: 0.969, green: 0.965, blue: 0.980)
     private let textPrimary = Color(red: 0.122, green: 0.082, blue: 0.216)
     private let textMuted = Color(red: 0.451, green: 0.400, blue: 0.557)
     private let textBox = Color(red: 0.938, green: 0.928, blue: 0.973)
 
     private var myListings: [Listing] {
-        listings.filter { $0.userId == uwEmail }
+        listings.filter { $0.userId == auth.userId }
     }
 
     var body: some View {
@@ -32,7 +24,7 @@ struct ProfileView: View {
                         Text("Profile")
                             .font(.largeTitle.weight(.bold))
                             .foregroundStyle(uwPurple)
-                        
+
                         ZStack {
                             Circle()
                                 .fill(textBox)
@@ -42,13 +34,13 @@ struct ProfileView: View {
                                 .font(.system(size: 30))
                                 .foregroundStyle(uwPurple)
                         }
-                        
+
                         VStack(alignment: .center, spacing: 6) {
                             Text("UW Verified")
                                 .font(.headline)
                                 .foregroundStyle(textPrimary)
-                                .background(textBox)
-                            Text(uwEmail)
+
+                            Text(auth.uwEmail)
                                 .foregroundStyle(textMuted)
                         }
                         .card()
@@ -57,7 +49,8 @@ struct ProfileView: View {
                             Text("My Listings")
                                 .font(.headline)
                                 .foregroundStyle(textPrimary)
-                            if (myListings.isEmpty) {
+
+                            if myListings.isEmpty {
                                 Text("No listings yet")
                                     .foregroundStyle(textMuted)
                             } else {
@@ -80,8 +73,9 @@ struct ProfileView: View {
                             }
                         }
                         .card()
-                        
+
                         Spacer()
+
                         Button {
                             auth.signOut()
                         } label: {
@@ -103,9 +97,8 @@ struct ProfileView: View {
                 .background(background)
             }
         }
-        
     }
-    
+
     @MainActor
     private func deleteListing(_ listing: Listing) async {
         do {

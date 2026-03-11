@@ -2,8 +2,6 @@
 //  MainTabView.swift
 //  sublease-go
 //
-//  Created by Hanna Pan on 3/3/26.
-//
 
 import SwiftUI
 import FirebaseFirestore
@@ -21,19 +19,16 @@ struct MainTabView: View {
     @State private var threadListener: ListenerRegistration?
     @State private var selectedTab = 0
 
-    private var currentUserId: String { uwEmail }
-    private var currentUserName: String { uwEmail }
-    
+    @EnvironmentObject var auth: AuthManager
+
+    private var currentUserId: String { auth.userId }
+    private var currentUserName: String { auth.uwEmail }
+
     private let uwPurple = Color(red: 0.227, green: 0.114, blue: 0.514)
-    private let uwGold = Color(red: 0.929, green: 0.710, blue: 0.102)
     private let background = Color(red: 0.969, green: 0.965, blue: 0.980)
-    private let textPrimary = Color(red: 0.122, green: 0.082, blue: 0.216)
-    private let textMuted = Color(red: 0.451, green: 0.400, blue: 0.557)
-    private let textBox = Color(red: 0.938, green: 0.928, blue: 0.973)
 
     var body: some View {
         ZStack {
-            
             TabView(selection: $selectedTab) {
                 ListingFeedView(
                     currentUserId: currentUserId,
@@ -74,13 +69,13 @@ struct MainTabView: View {
                 .tag(2)
 
                 ProfileView(uwEmail: uwEmail, listings: $listings)
-                .tabItem {
-                    Label("Profile", systemImage: "person")
-                }
-                .tag(3)
+                    .tabItem {
+                        Label("Profile", systemImage: "person")
+                    }
+                    .tag(3)
             }
-            .foregroundStyle(textPrimary)
             .tint(uwPurple)
+            .background(background)
             .task {
                 await loadListingsIfNeeded()
                 startThreadsListener()
@@ -89,12 +84,12 @@ struct MainTabView: View {
                 threadListener?.remove()
                 threadListener = nil
             }
-            .background(background)
         }
-        
     }
 
     private func startThreadsListener() {
+        guard !currentUserId.isEmpty else { return }
+
         threadListener?.remove()
 
         threadListener = messagingService.listenForThreads(currentUserId: currentUserId) { newThreads in
@@ -113,7 +108,7 @@ struct MainTabView: View {
             print("Failed to load listings from Firestore: \(error)")
         }
     }
-    
+
     @MainActor
     private func refreshListings() async {
         do {
