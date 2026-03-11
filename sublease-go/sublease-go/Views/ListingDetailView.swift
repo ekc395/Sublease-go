@@ -16,77 +16,107 @@ struct ListingDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var pushToThread: Thread? = nil
 
+    private let uwPurple = Color(red: 0.227, green: 0.114, blue: 0.514)
+    private let uwGold = Color(red: 0.929, green: 0.710, blue: 0.102)
+    private let background = Color(red: 0.969, green: 0.965, blue: 0.980)
+    private let textPrimary = Color(red: 0.122, green: 0.082, blue: 0.216)
+    private let textMuted = Color(red: 0.451, green: 0.400, blue: 0.557)
+    private let textBox = Color(red: 0.938, green: 0.928, blue: 0.973)
+    
     private let messagingService = FirebaseMessagingService()
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 14) {
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(Color.black.opacity(0.06))
-                        .frame(height: 220)
-                        .overlay(Text("Photos").foregroundStyle(.secondary))
+            ZStack {
+                background.ignoresSafeArea()
 
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text(listing.title)
-                            .font(.title2.weight(.semibold))
+                ScrollView {
+                    VStack(alignment: .center, spacing: 18) {
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .fill(textBox)
+                            .frame(height: 220)
+                            .overlay(
+                                Text("Photos")
+                                    .foregroundStyle(textMuted)
+                            )
 
-                        HStack(spacing: 8) {
-                            Pill("$\(listing.price)/mo")
-                            Pill("\(listing.bedrooms) BR")
-                            Pill(listing.apartmentBuilding)
-                        }
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text(listing.title)
+                                .font(.title2.weight(.semibold))
+                                .foregroundStyle(textPrimary)
 
-                        Text(listing.description)
-                    }
-                    .card()
-
-                    Button {
-                        Task {
-                            do {
-                                let threadId = try await messagingService.createOrGetThread(
-                                    listingId: listing.id,
-                                    listingTitle: listing.title,
-                                    currentUserId: currentUserId,
-                                    currentUserName: currentUserName,
-                                    otherUserId: listing.userId,
-                                    otherUserName: listing.ownerName
-                                )
-
-                                await MainActor.run {
-                                    if let existing = threads.first(where: { $0.id == threadId }) {
-                                        pushToThread = existing
-                                    } else {
-                                        let new = Thread(
-                                            id: threadId,
-                                            listingId: listing.id,
-                                            otherName: listing.ownerName,
-                                            lastPreview: "",
-                                            updatedAt: Date(),
-                                            messages: []
-                                        )
-                                        threads.insert(new, at: 0)
-                                        pushToThread = new
-                                    }
-                                }
-                            } catch {
-                                print("Failed to create/get thread:", error.localizedDescription)
+                            HStack(spacing: 8) {
+                                Pill("$\(listing.price)/mo")
+                                Pill("\(listing.bedrooms) BR")
+                                Pill(listing.apartmentBuilding)
                             }
+
+                            Text(listing.description)
+                                .foregroundStyle(textMuted)
                         }
-                    } label: {
-                        Text("Message lister")
+                        .card()
+
+                        Button {
+                            Task {
+                                do {
+                                    let threadId = try await messagingService.createOrGetThread(
+                                        listingId: listing.id,
+                                        listingTitle: listing.title,
+                                        currentUserId: currentUserId,
+                                        currentUserName: currentUserName,
+                                        otherUserId: listing.userId,
+                                        otherUserName: listing.ownerName
+                                    )
+
+                                    await MainActor.run {
+                                        if let existing = threads.first(where: { $0.id == threadId }) {
+                                            pushToThread = existing
+                                        } else {
+                                            let new = Thread(
+                                                id: threadId,
+                                                listingId: listing.id,
+                                                otherName: listing.ownerName,
+                                                lastPreview: "",
+                                                updatedAt: Date(),
+                                                messages: []
+                                            )
+                                            threads.insert(new, at: 0)
+                                            pushToThread = new
+                                        }
+                                    }
+                                } catch {
+                                    print("Failed to create/get thread:", error.localizedDescription)
+                                }
+                            }
+                        } label: {
+                            HStack(spacing: 8) {
+                                Text("MESSAGE LISTER")
+                                    .font(.system(size: 14, weight: .semibold))
+                            }
+                            .foregroundColor(background)
                             .frame(maxWidth: .infinity)
+                            .padding(.vertical, 18)
+                            .background(
+                                RoundedRectangle(cornerRadius: 14)
+                                    .fill(uwPurple)
+                            )
+                        }
                     }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.black)
+                    .padding(16)
                 }
-                .padding(16)
+                .padding(4)
             }
-            .navigationTitle("Listing")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("Listing Details")
+                        .font(.headline)
+                        .foregroundStyle(uwPurple)
+                }
+
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Close") { dismiss() }
+                    Button("Close") {
+                        dismiss()
+                    }
                 }
             }
             .navigationDestination(item: $pushToThread) { thread in
@@ -97,5 +127,36 @@ struct ListingDetailView: View {
                 )
             }
         }
+    }
+}
+
+#Preview {
+    ListingDetailPreview()
+}
+
+private struct ListingDetailPreview: View {
+    @State private var threads: [Thread] = []
+
+    var body: some View {
+        ListingDetailView(
+            listing: Listing(
+                id: "listing-1",
+                title: "Sunny 1BR near campus",
+                price: 1200,
+                bedrooms: 1,
+                apartmentBuilding: "University Heights",
+                furnished: true,
+                description: "Quiet unit 10 minutes from UW. Fully furnished and available for summer quarter.",
+                genderPreference: "None",
+                leaseStart: Date(),
+                leaseEnd: Calendar.current.date(byAdding: .month, value: 3, to: Date())!,
+                schoolYearPreference: "Summer",
+                userId: "owner@uw.edu",
+                ownerName: "Hanna Pan"
+            ),
+            currentUserId: "viewer@uw.edu",
+            currentUserName: "Viewer Name",
+            threads: $threads
+        )
     }
 }
