@@ -13,6 +13,7 @@ struct ListingFeedView: View {
     @Binding var listings: [Listing]
     @Binding var filters: Filters
     @Binding var threads: [Thread]
+    let onRefresh: () -> Void
 
     @State private var showFilters = false
     @State private var selectedListing: Listing? = nil
@@ -56,7 +57,15 @@ struct ListingFeedView: View {
                 }
             }
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItemGroup(placement: .topBarTrailing) {
+
+                    Button {
+                        onRefresh()
+                    } label: {
+                        Image(systemName: "arrow.clockwise")
+                            .foregroundStyle(uwPurple)
+                    }
+
                     Button {
                         showFilters = true
                     } label: {

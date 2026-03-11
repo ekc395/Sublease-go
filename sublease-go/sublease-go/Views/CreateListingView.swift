@@ -9,6 +9,8 @@ import SwiftUI
 
 struct CreateListingView: View {
     @Binding var listings: [Listing]
+    @Binding var selectedTab: Int
+    let onPosted: () -> Void
     var userId: String = ""
     var ownerName: String = ""
 
@@ -128,6 +130,9 @@ struct CreateListingView: View {
                                             apartmentBuilding = ""
                                             furnished = false
                                             isPosting = false
+                                            
+                                            onPosted()
+                                            selectedTab = 0
                                         }
                                     } catch let err {
                                         await MainActor.run {

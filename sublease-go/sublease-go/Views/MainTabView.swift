@@ -19,6 +19,7 @@ struct MainTabView: View {
 
     @State private var hasLoadedListings = false
     @State private var threadListener: ListenerRegistration?
+    @State private var selectedTab = 0
 
     private var currentUserId: String { uwEmail }
     private var currentUserName: String { uwEmail }
@@ -33,13 +34,16 @@ struct MainTabView: View {
     var body: some View {
         ZStack {
             
-            TabView {
+            TabView(selection: $selectedTab) {
                 ListingFeedView(
                     currentUserId: currentUserId,
                     currentUserName: currentUserName,
                     listings: $listings,
                     filters: $filters,
-                    threads: $threads
+                    threads: $threads,
+                    onRefresh: {
+                        Task { await refreshListings() }
+                    }
                 )
                 .tabItem {
                     Label("Feed", systemImage: "square.grid.2x2")
@@ -47,6 +51,10 @@ struct MainTabView: View {
 
                 CreateListingView(
                     listings: $listings,
+                    selectedTab: $selectedTab,
+                    onPosted: {
+                        Task { await refreshListings() }
+                    },
                     userId: currentUserId,
                     ownerName: currentUserName
                 )
@@ -99,6 +107,15 @@ struct MainTabView: View {
             listings = try await listingsService.fetchListings()
         } catch {
             print("Failed to load listings from Firestore: \(error)")
+        }
+    }
+    
+    @MainActor
+    private func refreshListings() async {
+        do {
+            listings = try await listingsService.fetchListings()
+        } catch {
+            print("Failed to refresh listings from Firestore: \(error)")
         }
     }
 }
