@@ -58,9 +58,10 @@ Sublease-go is an iOS application built with SwiftUI that helps UW students find
 - FirebaseListingsService
 - FirebaseMessagingService
 
-Project Structure
+## Project Structure
+
+```
 sublease-go/
-│
 ├── Models
 │   ├── Listing.swift
 │   └── Thread.swift
@@ -89,3 +90,4 @@ sublease-go/
 ├── Assets.xcassets
 ├── GoogleService-Info.plist
 └── sublease-goApp.swift
+```
